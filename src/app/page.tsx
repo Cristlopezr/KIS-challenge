@@ -1,7 +1,16 @@
-export default function Home() {
+import { fetchPersons } from '@/lib/data';
+import { Search } from './ui/search';
+
+export default async function Home() {
+    const persons = await fetchPersons();
     return (
-        <main className=''>
-            <h1>Hello</h1>
+        <main className='container mt-20'>
+            <Search />
+            <div>
+                {persons.map(person => (
+                    <div>{person.name}</div>
+                ))}
+            </div>
         </main>
     );
 }
