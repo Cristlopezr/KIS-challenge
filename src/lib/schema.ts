@@ -1,4 +1,5 @@
 import * as z from 'zod';
+import { validateRut } from './utils';
 
 export const createFormSchema = z.object({
     name: z
@@ -8,11 +9,19 @@ export const createFormSchema = z.object({
         })
         .trim(),
     lastname: z.string().min(1, { message: 'Por favor ingrese su apellido.' }).trim(),
-    rut: z.string().min(1, { message: 'Por favor ingrese su rut.' }).trim(),
+    rut: z
+        .string()
+        .min(8, { message: 'Por favor ingrese su rut.' })
+        .max(12, {
+            message: 'Por favor ingrese un rut válido.',
+        })
+        .refine(value => validateRut(value), {
+            message: 'Por favor ingrese un rut válido',
+        }),
     sex: z
         .string()
         .min(1, {
-            message: 'Pro favor seleccione un sexo.',
+            message: 'Por favor seleccione un sexo.',
         })
         .trim(),
     phone: z.string().min(1, { message: 'Por favor ingrese su teléfono.' }).trim(),

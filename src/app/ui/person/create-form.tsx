@@ -36,9 +36,11 @@ export const CreateForm = () => {
         console.log(result);
     };
 
+    const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {};
+
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
+            <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
                 {createFormItems.map(item => {
                     if (item.id === 'dob') {
                         return (
@@ -102,8 +104,8 @@ export const CreateForm = () => {
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                <SelectItem value='M'>Masculino</SelectItem>
-                                                <SelectItem value='F'>Femenino</SelectItem>
+                                                <SelectItem value='H'>Hombre</SelectItem>
+                                                <SelectItem value='M'>Mujer</SelectItem>
                                             </SelectContent>
                                         </Select>
                                         <FormMessage />
@@ -112,6 +114,30 @@ export const CreateForm = () => {
                             />
                         );
                     }
+                    /*    if (item.id === 'rut') {
+                        return (
+                            <FormField
+                                key={item.id}
+                                control={form.control}
+                                name={item.id}
+                                render={({ field }) => {
+                                    return (
+                                        <FormItem>
+                                            <FormLabel>{item.label}</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    placeholder={item.placeholder}
+                                                    {...field}
+                                                    onChange={onChange}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    );
+                                }}
+                            />
+                        );
+                    } */
                     return (
                         <FormField
                             key={item.id}
@@ -122,11 +148,7 @@ export const CreateForm = () => {
                                     <FormItem>
                                         <FormLabel>{item.label}</FormLabel>
                                         <FormControl>
-                                            <Input
-                                                placeholder={item.placeholder}
-                                                {...field}
-                                                value={field.value as string}
-                                            />
+                                            <Input placeholder={item.placeholder} {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -135,7 +157,9 @@ export const CreateForm = () => {
                         />
                     );
                 })}
-                <Button type='submit'>Crear</Button>
+                <Button className='w-full' type='submit'>
+                    Crear
+                </Button>
             </form>
         </Form>
     );
