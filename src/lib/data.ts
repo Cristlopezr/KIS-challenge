@@ -1,6 +1,6 @@
 import { unstable_noStore } from 'next/cache';
 import { sql } from '@vercel/postgres';
-import { FormItems } from './interfaces';
+import { FormItems, Person } from './interfaces';
 
 export async function fetchPersons() {
     unstable_noStore();
@@ -23,21 +23,27 @@ export async function fetchFilteredPersons(query: string, currentPage: number) {
 
     try {
         const persons = await sql`
-        SELECT *
+        SELECT persona.*, 
+        comuna.name AS comuna, region.name AS region
         FROM persona
+        JOIN comuna ON persona.commune_id = comuna.id
+        JOIN region ON comuna.region_id = region.id
         WHERE
-            name ILIKE ${`%${query}%`} OR
-            lastname ILIKE ${`%${query}%`} OR
-            rut ILIKE ${`%${query}%`} OR
-            sex ILIKE ${`%${query}%`} OR
-            phone ILIKE ${`%${query}%`} OR
-            address ILIKE ${`%${query}%`} OR
-            sex ILIKE ${`%${query}%`} OR
-            email ILIKE ${`%${query}%`} OR
+            persona.name ILIKE ${`%${query}%`} OR
+            persona.lastname ILIKE ${`%${query}%`} OR
+            persona.rut ILIKE ${`%${query}%`} OR
+            persona.sex ILIKE ${`%${query}%`} OR
+            persona.phone ILIKE ${`%${query}%`} OR
+            persona.number ILIKE ${`%${query}%`} OR
+            persona.street ILIKE ${`%${query}%`} OR
+            persona.sex ILIKE ${`%${query}%`} OR
+            persona.email ILIKE ${`%${query}%`} OR
+            comuna.name ILIKE ${`%${query}%`} OR
+            region.name ILIKE ${`%${query}%`} OR
             to_char(dob, 'DD Mon YYYY') ILIKE ${`%${query}%`} OR
             to_char(dob, 'DD/MM/YYYY') ILIKE ${`%${query}%`} OR
             to_char(dob, 'DD-MM-YYYY') ILIKE ${`%${query}%`}
-        ORDER BY dob ASC
+        ORDER BY persona.name ASC
         LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
       `;
 
@@ -52,23 +58,44 @@ export async function fetchPersonsPages(query: string) {
     unstable_noStore();
     try {
         const count = await sql`SELECT COUNT(*)
-      FROM persona
-      WHERE
-        name ILIKE ${`%${query}%`} OR
-        lastname ILIKE ${`%${query}%`} OR
-        rut ILIKE ${`%${query}%`} OR
-        sex ILIKE ${`%${query}%`} OR
-        phone ILIKE ${`%${query}%`} OR
-        address ILIKE ${`%${query}%`} OR
-        sex ILIKE ${`%${query}%`} OR
-        email ILIKE ${`%${query}%`} OR
-        dob::text ILIKE ${`%${query}%`}
+        FROM persona
+        JOIN comuna ON persona.commune_id = comuna.id
+        JOIN region ON comuna.region_id = region.id
+        WHERE
+            persona.name ILIKE ${`%${query}%`} OR
+            persona.lastname ILIKE ${`%${query}%`} OR
+            persona.rut ILIKE ${`%${query}%`} OR
+            persona.sex ILIKE ${`%${query}%`} OR
+            persona.phone ILIKE ${`%${query}%`} OR
+            persona.number ILIKE ${`%${query}%`} OR
+            persona.street ILIKE ${`%${query}%`} OR
+            persona.sex ILIKE ${`%${query}%`} OR
+            persona.email ILIKE ${`%${query}%`} OR
+            comuna.name ILIKE ${`%${query}%`} OR
+            region.name ILIKE ${`%${query}%`} OR
+            to_char(dob, 'DD Mon YYYY') ILIKE ${`%${query}%`} OR
+            to_char(dob, 'DD/MM/YYYY') ILIKE ${`%${query}%`} OR
+            to_char(dob, 'DD-MM-YYYY') ILIKE ${`%${query}%`}
     `;
         const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
         return totalPages;
     } catch (error) {
         console.error('Error en la base de datos:', error);
         throw new Error('Ocurrio un error al obtener el número total de páginas de personas.');
+    }
+}
+
+export async function fetchPersonById(id: string) {
+    unstable_noStore();
+    try {
+        const person = await sql<Person>`SELECT persona.*, comuna.name AS comuna, region.name AS region FROM persona 
+        JOIN comuna ON(persona.commune_id=comuna.id) 
+        JOIN region ON(comuna.region_id=region.id) 
+        WHERE persona.id=${id}`;
+        return person.rows[0];
+    } catch (error) {
+        console.error('Error en la base de datos:', error);
+        throw new Error('Ocurrio un error al obtener la persona.');
     }
 }
 

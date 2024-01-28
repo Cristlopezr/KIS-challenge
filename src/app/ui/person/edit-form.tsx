@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { createPerson } from '@/lib/actions';
 import { months } from '@/lib/data';
+import { EditPerson } from '@/lib/interfaces';
 import { createFormSchema } from '@/lib/schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
@@ -13,25 +13,25 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
-export const CreateForm = () => {
+export const EditForm = ({ person }: { person: EditPerson }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
 
     const form = useForm<z.infer<typeof createFormSchema>>({
         resolver: zodResolver(createFormSchema),
         defaultValues: {
-            name: '',
-            lastname: '',
-            rut: '',
-            number_street: '',
-            commune: '',
-            region: '',
-            email: '',
-            phone: '',
-            sex: '',
-            dob_day: '',
-            dob_month: '',
-            dob_year: '',
+            name: person.name,
+            lastname: person.lastname,
+            rut: person.rut,
+            number_street: `${person.number} ${person.street}`,
+            commune: person.comuna,
+            region: person.region,
+            email: person.email,
+            phone: person.phone,
+            sex: person.sex,
+            dob_day: person.dob_day,
+            dob_month: person.dob_month,
+            dob_year: person.dob_year,
         },
     });
 
@@ -39,7 +39,8 @@ export const CreateForm = () => {
         setErrorMessage(undefined);
         setIsLoading(true);
         try {
-            await createPerson(values);
+            //!Llamar action para editar
+            /* await createPerson(values); */
             setIsLoading(false);
         } catch (error: any) {
             setIsLoading(false);
@@ -200,7 +201,7 @@ export const CreateForm = () => {
                                 return (
                                     <FormItem>
                                         <FormControl>
-                                            <Input placeholder='Número y calle' {...field} />
+                                            <Input placeholder='Número y Calle' {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -265,7 +266,7 @@ export const CreateForm = () => {
                         </Button>
                     ) : (
                         <Button className='w-full' type='submit'>
-                            Crear
+                            Guardar
                         </Button>
                     )}
                 </div>

@@ -1,9 +1,10 @@
 import { fetchFilteredPersons } from '@/lib/data';
 import { formatDateToLocal } from '@/lib/utils';
+import { FilePenLine, Trash2 } from 'lucide-react';
+import Link from 'next/link';
 
 export const Table = async ({ query, currentPage }: { query: string; currentPage: number }) => {
     const persons = await fetchFilteredPersons(query, currentPage);
-
     return (
         <div className='mt-10 rounded-lg bg-gray-50 pb-2 px-2 relative overflow-x-auto'>
             {/* <div className='lg:hidden grid grid-cols-1 sm:grid-cols-2'>
@@ -71,12 +72,14 @@ export const Table = async ({ query, currentPage }: { query: string; currentPage
                             <td className='whitespace-nowrap px-3 py-3'>{person.sex}</td>
                             <td className='whitespace-nowrap px-3 py-3'>{person.email}</td>
                             <td className='whitespace-nowrap px-3 py-3'>{person.phone}</td>
-                            <td className='whitespace-nowrap px-3 py-3'>{person.address}</td>
+                            <td className='whitespace-nowrap px-3 py-3'>{person.number} {person.street} {person.comuna} {person.region}</td>
                             <td className='whitespace-nowrap px-3 py-3'>{formatDateToLocal(person.dob)}</td>
                             <td className='whitespace-nowrap py-3 pl-6 pr-3'>
                                 <div className='flex justify-end gap-3'>
-                                    {/* Update */}
-                                    {/* Delete */}
+                                    <Link href={`/person/${person.id}/edit`}>
+                                        <FilePenLine className='text-primary' />
+                                    </Link>
+                                    <Trash2 className='cursor-pointer text-destructive' />
                                 </div>
                             </td>
                         </tr>
