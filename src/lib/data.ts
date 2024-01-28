@@ -16,7 +16,7 @@ export async function fetchPersons() {
     }
 }
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 3;
 export async function fetchFilteredPersons(query: string, currentPage: number) {
     unstable_noStore();
     const offset = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -37,7 +37,7 @@ export async function fetchFilteredPersons(query: string, currentPage: number) {
             to_char(dob, 'DD Mon YYYY') ILIKE ${`%${query}%`} OR
             to_char(dob, 'DD/MM/YYYY') ILIKE ${`%${query}%`} OR
             to_char(dob, 'DD-MM-YYYY') ILIKE ${`%${query}%`}
-        ORDER BY dob DESC
+        ORDER BY dob ASC
         LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
       `;
 
@@ -64,8 +64,6 @@ export async function fetchPersonsPages(query: string) {
         email ILIKE ${`%${query}%`} OR
         dob::text ILIKE ${`%${query}%`}
     `;
-
-        console.log(count, 'COUNT');
         const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
         return totalPages;
     } catch (error) {
@@ -111,9 +109,19 @@ export const createFormItems: FormItems[] = [
         placeholder: 'Dirección',
     },
     {
-        id: 'dob',
-        label: 'Fecha de nacimiento',
-        placeholder: 'Fecha de nacimiento',
+        id: 'dob_day',
+        label: 'Día',
+        placeholder: 'Día',
+    },
+    {
+        id: 'dob_month',
+        label: 'Mes',
+        placeholder: 'Mes',
+    },
+    {
+        id: 'dob_year',
+        label: 'Año',
+        placeholder: 'Año',
     },
     {
         id: 'email',
@@ -121,4 +129,19 @@ export const createFormItems: FormItems[] = [
         type: 'text',
         placeholder: 'Correo electrónico',
     },
+];
+
+export const months = [
+    { month: 'Enero', value: '01' },
+    { month: 'Febrero', value: '02' },
+    { month: 'Marzo', value: '03' },
+    { month: 'Abril', value: '04' },
+    { month: 'Mayo', value: '05' },
+    { month: 'Junio', value: '06' },
+    { month: 'Julio', value: '07' },
+    { month: 'Agosto', value: '08' },
+    { month: 'Septiembre', value: '09' },
+    { month: 'Octubre', value: '10' },
+    { month: 'Noviembre', value: '11' },
+    { month: 'Diciembre', value: '12' },
 ];

@@ -4,13 +4,16 @@ const { db } = require('@vercel/postgres');
 async function createPersons(client) {
     try {
         await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+
+        await client.sql`DROP TABLE IF EXISTS persona;`;
+
         const createTable = await client.sql`
         CREATE TABLE IF NOT EXISTS persona (
         id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
         lastname VARCHAR(255) NOT NULL,
-        rut VARCHAR(12) NOT NULL,
-        sex CHAR(1) NOT NULL,
+        rut VARCHAR(12) NOT NULL UNIQUE,
+        sex VARCHAR(6) NOT NULL,
         phone VARCHAR(12) NOT NULL,
         address TEXT NOT NULL,
         dob DATE NOT NULL,
