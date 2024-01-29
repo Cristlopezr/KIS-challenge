@@ -38,7 +38,7 @@ export function DeletePerson({ id }: { id: string }) {
     return (
         <AlertDialog open={isAlertOpen}>
             <AlertDialogTrigger className='cursor-pointer' asChild onClick={() => setIsAlertOpen(true)}>
-                <TrashIcon className='text-destructive' />
+                <div className='text-sm p-2 hover:bg-gray-100 rounded-md'>Eliminar</div>
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
