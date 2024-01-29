@@ -46,7 +46,6 @@ export async function fetchFilteredPersons(query: string, currentPage: number) {
         ORDER BY persona.name ASC
         LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
       `;
-
         return persons.rows;
     } catch (error) {
         console.error('Error en la base de datos:', error);

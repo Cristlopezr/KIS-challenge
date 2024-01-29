@@ -3,7 +3,7 @@ export const revalidate = 0;
 
 import { fetchPersonsPages } from '@/lib/data';
 import { Search } from './ui/search';
-import { Table } from './ui/table';
+import { CustomTable } from './ui/table';
 import { Pagination } from './ui/pagination';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -22,7 +22,7 @@ export default async function Home({ searchParams }: { searchParams?: { page: st
             </Link>
 
             <Search />
-            <Table query={query} currentPage={currentPage} />
+            <CustomTable query={query} currentPage={currentPage} />
             <div className='mt-5 flex items-center justify-center'>
                 <Pagination totalPages={totalPages} />
             </div>
