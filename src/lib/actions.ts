@@ -4,6 +4,7 @@ import { createFormSchema } from './schema';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { sql } from '@vercel/postgres';
+import { Commune } from './interfaces';
 
 export async function createPerson(data: z.infer<typeof createFormSchema>) {
     const validatedFields = createFormSchema.safeParse(data);
@@ -14,29 +15,19 @@ export async function createPerson(data: z.infer<typeof createFormSchema>) {
             message: 'Faltan campos. La creación falló.',
         };
     }
-    const {
-        name,
-        lastname,
-        commune,
-        number,
-        region,
-        street,
-        dob_day,
-        dob_month,
-        dob_year,
-        email,
-        phone,
-        rut,
-        sex,
-    } = validatedFields.data;
+    const { name, lastname, commune, number_street, dob_day, dob_month, dob_year, email, phone, rut, sex } =
+        validatedFields.data;
 
     const dob = `${dob_year}-${dob_month}-${dob_day}`;
-    const address = `${number} ${street} ${commune} ${region}`;
+    //!arreglar
+    const [number, ...rest] = number_street.split(' ');
+
+    const street = rest.join('');
 
     try {
         await sql`
-    INSERT INTO persona (name, lastname, rut, sex, phone, address, dob, email)
-    Values (${name}, ${lastname}, ${rut}, ${sex}, ${phone}, ${address}, ${dob}, ${email})
+    INSERT INTO persona (name, lastname, rut, sex, phone, number, street, dob, email, commune_id)
+    Values (${name}, ${lastname}, ${rut}, ${sex}, ${phone}, ${number}, ${street}, ${dob}, ${email}, ${commune})
     `;
     } catch (error: any) {
         if (error?.code === '23505') {
@@ -53,4 +44,14 @@ export async function createPerson(data: z.infer<typeof createFormSchema>) {
 
     revalidatePath('/');
     redirect('/');
+}
+
+export async function fetchCommunes(region_id: string) {
+    try {
+        const communes = await sql<Commune>`SELECT * FROM comuna WHERE region_id=${region_id}`;
+        return communes.rows;
+    } catch (error) {
+        console.error('Error en la base de datos:', error);
+        throw new Error('Ocurrio un error al obtener las comunas.');
+    }
 }

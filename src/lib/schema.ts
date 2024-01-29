@@ -32,13 +32,13 @@ export const createFormSchema = z.object({
     commune: z
         .string()
         .min(1, {
-            message: 'Por favor ingrese el nombre de la comuna.',
+            message: 'Por favor seleccione la comuna.',
         })
         .trim(),
     region: z
         .string()
         .min(1, {
-            message: 'Por favor ingrese el nombre de la región.',
+            message: 'Por favor seleccione la región.',
         })
         .trim(),
     dob_day: z

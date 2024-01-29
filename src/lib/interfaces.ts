@@ -46,3 +46,15 @@ export type EditPerson = {
     comuna: string;
     region: string;
 };
+
+export type Region = {
+    id: string;
+    name: string;
+    cod: string;
+};
+
+export type Commune = {
+    id: string;
+    name: string;
+    region_id: string;
+};

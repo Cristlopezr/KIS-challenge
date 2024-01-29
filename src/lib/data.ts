@@ -1,6 +1,6 @@
 import { unstable_noStore } from 'next/cache';
 import { sql } from '@vercel/postgres';
-import { FormItems, Person } from './interfaces';
+import { Commune, FormItems, Person, Region } from './interfaces';
 
 export async function fetchPersons() {
     unstable_noStore();
@@ -88,7 +88,8 @@ export async function fetchPersonsPages(query: string) {
 export async function fetchPersonById(id: string) {
     unstable_noStore();
     try {
-        const person = await sql<Person>`SELECT persona.*, comuna.name AS comuna, region.name AS region FROM persona 
+        const person =
+            await sql<Person>`SELECT persona.*, comuna.name AS comuna, region.name AS region FROM persona 
         JOIN comuna ON(persona.commune_id=comuna.id) 
         JOIN region ON(comuna.region_id=region.id) 
         WHERE persona.id=${id}`;
@@ -98,6 +99,17 @@ export async function fetchPersonById(id: string) {
         throw new Error('Ocurrio un error al obtener la persona.');
     }
 }
+
+export async function fetchRegions() {
+    try {
+        const regions = await sql<Region>`SELECT * FROM region`;
+        return regions.rows;
+    } catch (error) {
+        console.error('Error en la base de datos:', error);
+        throw new Error('Ocurrio un error al obtener las regiones.');
+    }
+}
+
 
 export const createFormItems: FormItems[] = [
     {

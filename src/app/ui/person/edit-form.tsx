@@ -4,18 +4,25 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { fetchCommunes } from '@/lib/actions';
 import { months } from '@/lib/data';
-import { EditPerson } from '@/lib/interfaces';
+import { Commune, EditPerson, Region } from '@/lib/interfaces';
 import { createFormSchema } from '@/lib/schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
-export const EditForm = ({ person }: { person: EditPerson }) => {
+export const EditForm = ({ person, regions }: { person: EditPerson; regions: Region[] }) => {
+    const [isCommunesLoading, setIsCommunesLoading] = useState(false);
+    const [communes, setCommunes] = useState<Commune[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
+
+    useEffect(() => {
+        fetchRegionCommunes();
+    }, []);
 
     const form = useForm<z.infer<typeof createFormSchema>>({
         resolver: zodResolver(createFormSchema),
@@ -52,6 +59,25 @@ export const EditForm = ({ person }: { person: EditPerson }) => {
         /* form.replace([{data: 'test'}]) */
     };
 
+    const fetchRegionCommunes = async () => {
+        const region = regions.find(region => region.name === person.region);
+        const communes = await fetchCommunes(region?.id!);
+        setCommunes(communes);
+    };
+
+    const onChangeRegion = async (value: string) => {
+        form.setValue('region', value, { shouldValidate: true });
+        form.setValue('commune', '', { shouldValidate: false });
+        try {
+            setIsCommunesLoading(true);
+            const communes = await fetchCommunes(value);
+            setCommunes(communes);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIsCommunesLoading(false);
+        }
+    };
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -211,30 +237,61 @@ export const EditForm = ({ person }: { person: EditPerson }) => {
                         <FormField
                             control={form.control}
                             name='region'
-                            render={({ field }) => {
-                                return (
-                                    <FormItem>
+                            render={({ field }) => (
+                                <FormItem>
+                                    <Select onValueChange={onChangeRegion}>
                                         <FormControl>
-                                            <Input placeholder='Región' {...field} />
+                                            <SelectTrigger>
+                                                <SelectValue placeholder={field.value} />
+                                            </SelectTrigger>
                                         </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                );
-                            }}
+                                        <SelectContent>
+                                            {regions.map(region => (
+                                                <SelectItem key={region.id} value={region.id}>
+                                                    {region.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
                         />
                         <FormField
                             control={form.control}
                             name='commune'
-                            render={({ field }) => {
-                                return (
-                                    <FormItem>
+                            render={({ field }) => (
+                                <FormItem>
+                                    <Select onValueChange={field.onChange}>
                                         <FormControl>
-                                            <Input placeholder='Comuna' {...field} />
+                                            <SelectTrigger disabled={isCommunesLoading}>
+                                                <SelectValue
+                                                    placeholder={
+                                                        isCommunesLoading ? (
+                                                            <div className='flex gap-1 items-center'>
+                                                                Cargando comunas...
+                                                                <Loader2 className='animate-spin w-4 h-4' />
+                                                            </div>
+                                                        ) : field.value ? (
+                                                            field.value
+                                                        ) : (
+                                                            'Comuna'
+                                                        )
+                                                    }
+                                                />
+                                            </SelectTrigger>
                                         </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                );
-                            }}
+                                        <SelectContent>
+                                            {communes?.map(commune => (
+                                                <SelectItem key={commune.id} value={commune.id}>
+                                                    {commune.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
                         />
                     </div>
                     <FormField
