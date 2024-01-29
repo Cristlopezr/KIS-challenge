@@ -1,4 +1,7 @@
-import { fetchPersons, fetchPersonsPages } from '@/lib/data';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+import { fetchPersonsPages } from '@/lib/data';
 import { Search } from './ui/search';
 import { Table } from './ui/table';
 import { Pagination } from './ui/pagination';

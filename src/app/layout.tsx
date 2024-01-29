@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import Link from 'next/link';
+import { CustomAlert } from './ui/custom-alert';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -17,7 +18,8 @@ export default function RootLayout({
 }>) {
     return (
         <html lang='en'>
-            <body className={inter.className}>
+            <body className={`${inter.className} relative`}>
+                <CustomAlert />
                 <nav className='bg-gray-50'>
                     <li className='container flex gap-10 px-10 py-5'>
                         <Link href='/'>Inicio</Link>

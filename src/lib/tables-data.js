@@ -59,6 +59,78 @@ const persons = [
       email: 'pedro.l@gmail.com',
       commune_id: '5a19f8c1-c36c-4a4a-939c-c0c12b08cddc'
     },
+    {
+      name: 'Luis',
+      lastname: 'Pérez',
+      rut: '18.765.432-1',
+      sex: 'Hombre',
+      phone: '+56987654321',
+      number: '456',
+      street: 'Avenida Norte',
+      dob: '1990-07-12',
+      email: 'luis.p@gmail.com',
+      commune_id: '5a19f8c1-c36c-4a4a-939c-c0c12b08cddc'
+    },
+    {
+      name: 'Ana',
+      lastname: 'Soto',
+      rut: '22.334.445-5',
+      sex: 'Mujer',
+      phone: '+56999887766',
+      number: '789',
+      street: 'Calle Sur',
+      dob: '1985-04-25',
+      email: 'ana.s@gmail.com',
+      commune_id: 'ea4c5b95-19b3-4d05-8de9-0996b37ea944'
+    },
+    {
+      name: 'Carolina',
+      lastname: 'Muñoz',
+      rut: '15.678.901-2',
+      sex: 'Mujer',
+      phone: '+56976543210',
+      number: '987',
+      street: 'Avenida Oeste',
+      dob: '1987-11-30',
+      email: 'carolina.m@gmail.com',
+      commune_id: 'f36e3f5c-3157-497f-a3d4-6906f9c03b88'
+    },
+    {
+      name: 'Felipe',
+      lastname: 'Vega',
+      rut: '14.256.987-3',
+      sex: 'Hombre',
+      phone: '+56955566677',
+      number: '321',
+      street: 'Calle Este',
+      dob: '1993-08-05',
+      email: 'felipe.v@gmail.com',
+      commune_id: 'bd7d37b8-e630-4a24-818d-b3e3907c1c2a'
+    },
+    {
+      name: 'Gabriela',
+      lastname: 'Torres',
+      rut: '17.889.445-6',
+      sex: 'Mujer',
+      phone: '+56977788899',
+      number: '654',
+      street: 'Avenida Sur',
+      dob: '1982-05-20',
+      email: 'gabriela.t@gmail.com',
+      commune_id: 'c98f02f5-6c4b-4d94-8fc9-1ed26c2ad3cc'
+    },
+    {
+      name: 'Roberto',
+      lastname: 'Díaz',
+      rut: '10.112.334-4',
+      sex: 'Hombre',
+      phone: '+56911122334',
+      number: '555',
+      street: 'Calle Central',
+      dob: '1998-02-15',
+      email: 'roberto.d@gmail.com',
+      commune_id: 'e2909c6a-0bc9-4bd5-8cd3-e993f93ab5c4'
+    }
   ];
   
   

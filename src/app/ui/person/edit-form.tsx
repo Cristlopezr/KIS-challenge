@@ -8,6 +8,7 @@ import { editPerson, fetchCommunes } from '@/lib/actions';
 import { months } from '@/lib/data';
 import { Commune, EditPerson, Region } from '@/lib/interfaces';
 import { createFormSchema } from '@/lib/schema';
+import { useUiStore } from '@/store/ui-store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -19,15 +20,10 @@ export const EditForm = ({ person, regions }: { person: EditPerson; regions: Reg
     const [communes, setCommunes] = useState<Commune[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
+    const onShowAlert = useUiStore(state => state.onShowAlert);
 
     useEffect(() => {
         fetchRegionCommunes();
-    }, []);
-
-    useEffect(() => {
-        return () => {
-            setIsLoading(false);
-        };
     }, []);
 
     const form = useForm<z.infer<typeof createFormSchema>>({
@@ -53,9 +49,11 @@ export const EditForm = ({ person, regions }: { person: EditPerson; regions: Reg
         setIsLoading(true);
         try {
             await editPerson(person.id, values);
+            onShowAlert('success', 'Persona editada correctamente.', 'Éxito');
         } catch (error: any) {
             setIsLoading(false);
             setErrorMessage(error.message);
+            onShowAlert('error', error.message, 'Error');
         }
     };
 

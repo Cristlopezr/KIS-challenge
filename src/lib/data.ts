@@ -16,7 +16,7 @@ export async function fetchPersons() {
     }
 }
 
-const ITEMS_PER_PAGE = 3;
+const ITEMS_PER_PAGE = 5;
 export async function fetchFilteredPersons(query: string, currentPage: number) {
     unstable_noStore();
     const offset = (currentPage - 1) * ITEMS_PER_PAGE;

@@ -19,7 +19,6 @@ export async function createPerson(data: z.infer<typeof createFormSchema>) {
         validatedFields.data;
 
     const dob = `${dob_year}-${dob_month}-${dob_day}`;
-    //!arreglar
     const [number, ...rest] = number_street.split(' ');
 
     const street = rest.join('');
@@ -59,7 +58,7 @@ export async function editPerson(id: string, data: z.infer<typeof createFormSche
         validatedFields.data;
 
     const dob = `${dob_year}-${dob_month}-${dob_day}`;
-    //!arreglar
+  
     const [number, ...rest] = number_street.split(' ');
 
     const street = rest.join('');
@@ -103,6 +102,6 @@ export async function deletePerson(id: string) {
         revalidatePath('/');
     } catch (error) {
         console.error('Error en la base de datos:', error);
-        throw new Error('Ocurrio un error al eliminar la persona.');
+        throw new Error('Ocurrio un error al eliminar el usuario.');
     }
 }
