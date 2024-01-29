@@ -46,7 +46,7 @@ export async function createPerson(data: z.infer<typeof createFormSchema>) {
     redirect('/');
 }
 
-export async function editPerson(id:string,data: z.infer<typeof createFormSchema>) {
+export async function editPerson(id: string, data: z.infer<typeof createFormSchema>) {
     const validatedFields = createFormSchema.safeParse(data);
 
     if (!validatedFields.success) {
@@ -70,7 +70,7 @@ export async function editPerson(id:string,data: z.infer<typeof createFormSchema
     WHERE id = ${id}
     `;
     } catch (error: any) {
-        console.log(error)
+        console.log(error);
         if (error?.code === '23505') {
             if (error.message.includes('rut')) {
                 throw new Error('El rut ya está registrado.');
@@ -94,5 +94,15 @@ export async function fetchCommunes(region_id: string) {
     } catch (error) {
         console.error('Error en la base de datos:', error);
         throw new Error('Ocurrio un error al obtener las comunas.');
+    }
+}
+
+export async function deletePerson(id: string) {
+    try {
+        await sql`DELETE FROM persona WHERE id = ${id}`;
+        revalidatePath('/');
+    } catch (error) {
+        console.error('Error en la base de datos:', error);
+        throw new Error('Ocurrio un error al eliminar la persona.');
     }
 }

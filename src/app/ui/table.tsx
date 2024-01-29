@@ -2,6 +2,7 @@ import { fetchFilteredPersons } from '@/lib/data';
 import { formatDateToLocal } from '@/lib/utils';
 import { FilePenLine, Trash2 } from 'lucide-react';
 import Link from 'next/link';
+import { DeletePerson } from './person/deletePerson';
 
 export const Table = async ({ query, currentPage }: { query: string; currentPage: number }) => {
     const persons = await fetchFilteredPersons(query, currentPage);
@@ -72,14 +73,16 @@ export const Table = async ({ query, currentPage }: { query: string; currentPage
                             <td className='whitespace-nowrap px-3 py-3'>{person.sex}</td>
                             <td className='whitespace-nowrap px-3 py-3'>{person.email}</td>
                             <td className='whitespace-nowrap px-3 py-3'>{person.phone}</td>
-                            <td className='whitespace-nowrap px-3 py-3'>{person.number} {person.street} {person.comuna} {person.region}</td>
+                            <td className='whitespace-nowrap px-3 py-3'>
+                                {person.number} {person.street} {person.comuna} {person.region}
+                            </td>
                             <td className='whitespace-nowrap px-3 py-3'>{formatDateToLocal(person.dob)}</td>
                             <td className='whitespace-nowrap py-3 pl-6 pr-3'>
-                                <div className='flex justify-end gap-3'>
-                                    <Link href={`/person/${person.id}/edit`}>
+                                <div className='flex justify-end items-start gap-3'>
+                                    <Link href={`/person/${person.id}/edit`} className='pb-1'>
                                         <FilePenLine className='text-primary' />
                                     </Link>
-                                    <Trash2 className='cursor-pointer text-destructive' />
+                                    <DeletePerson id={person.id} />
                                 </div>
                             </td>
                         </tr>

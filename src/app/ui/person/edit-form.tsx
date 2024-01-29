@@ -24,6 +24,12 @@ export const EditForm = ({ person, regions }: { person: EditPerson; regions: Reg
         fetchRegionCommunes();
     }, []);
 
+    useEffect(() => {
+        return () => {
+            setIsLoading(false);
+        };
+    }, []);
+
     const form = useForm<z.infer<typeof createFormSchema>>({
         resolver: zodResolver(createFormSchema),
         defaultValues: {
@@ -47,7 +53,6 @@ export const EditForm = ({ person, regions }: { person: EditPerson; regions: Reg
         setIsLoading(true);
         try {
             await editPerson(person.id, values);
-            setIsLoading(false);
         } catch (error: any) {
             setIsLoading(false);
             setErrorMessage(error.message);
