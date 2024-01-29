@@ -110,7 +110,6 @@ export async function fetchRegions() {
     }
 }
 
-
 export const createFormItems: FormItems[] = [
     {
         id: 'name',

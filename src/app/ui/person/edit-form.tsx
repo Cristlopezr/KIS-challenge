@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { fetchCommunes } from '@/lib/actions';
+import { editPerson, fetchCommunes } from '@/lib/actions';
 import { months } from '@/lib/data';
 import { Commune, EditPerson, Region } from '@/lib/interfaces';
 import { createFormSchema } from '@/lib/schema';
@@ -31,7 +31,7 @@ export const EditForm = ({ person, regions }: { person: EditPerson; regions: Reg
             lastname: person.lastname,
             rut: person.rut,
             number_street: `${person.number} ${person.street}`,
-            commune: person.comuna,
+            commune: person.commune_id,
             region: person.region,
             email: person.email,
             phone: person.phone,
@@ -46,8 +46,7 @@ export const EditForm = ({ person, regions }: { person: EditPerson; regions: Reg
         setErrorMessage(undefined);
         setIsLoading(true);
         try {
-            //!Llamar action para editar
-            /* await createPerson(values); */
+            await editPerson(person.id, values);
             setIsLoading(false);
         } catch (error: any) {
             setIsLoading(false);
@@ -273,7 +272,9 @@ export const EditForm = ({ person, regions }: { person: EditPerson; regions: Reg
                                                                 <Loader2 className='animate-spin w-4 h-4' />
                                                             </div>
                                                         ) : field.value ? (
-                                                            field.value
+                                                            communes.find(
+                                                                commune => commune.id === field.value
+                                                            )?.name
                                                         ) : (
                                                             'Comuna'
                                                         )

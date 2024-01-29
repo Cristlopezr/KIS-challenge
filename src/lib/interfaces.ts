@@ -28,6 +28,7 @@ export type Person = {
     region: string;
     dob: string;
     email: string;
+    commune_id:string;
 };
 
 export type EditPerson = {
@@ -45,6 +46,7 @@ export type EditPerson = {
     email: string;
     comuna: string;
     region: string;
+    commune_id:string;
 };
 
 export type Region = {
