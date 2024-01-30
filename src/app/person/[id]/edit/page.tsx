@@ -3,6 +3,7 @@ import { DataTable } from '@/app/ui/data-table';
 import { EditForm } from '@/app/ui/person/edit-form';
 import { fetchPersonById, fetchRegions, fetchRelationsById } from '@/lib/data';
 import { formatDateToLocal } from '@/lib/utils';
+import { notFound } from 'next/navigation';
 
 export default async function EditPersonPage({ params }: { params: { id: string; page: string } }) {
     const id = params.id;
@@ -10,6 +11,10 @@ export default async function EditPersonPage({ params }: { params: { id: string;
     const relations = await fetchRelationsById(id, currentPage);
     const person = await fetchPersonById(id);
     const regions = await fetchRegions();
+
+    if(!person){
+        notFound()
+    }
 
     const [dob_day, dob_month, dob_year] = formatDateToLocal(person.dob).split('-');
 
