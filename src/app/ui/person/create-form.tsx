@@ -8,13 +8,14 @@ import { createPerson, fetchCommunes, fetchPersonByRut } from '@/lib/actions';
 import { months } from '@/lib/data';
 import { Commune, Region } from '@/lib/interfaces';
 import { createFormSchema } from '@/lib/schema';
-import { formatDateToLocal, validateRut } from '@/lib/utils';
+import { formatDateToLocal } from '@/lib/utils';
 import { useUiStore } from '@/store/ui-store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { QueryResultRow } from '@vercel/postgres';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { format, validate } from 'rut.js';
 import * as z from 'zod';
 
 export const CreateForm = ({ regions }: { regions: Region[] }) => {
@@ -70,7 +71,7 @@ export const CreateForm = ({ regions }: { regions: Region[] }) => {
     const onSearchByRut = async () => {
         setIsRelationLoading(true);
         try {
-            const relationRutPerson = await fetchPersonByRut(relationPersonRut);
+            const relationRutPerson = await fetchPersonByRut(format(relationPersonRut));
             setRelationPerson(relationRutPerson);
             setIsRelationLoading(false);
         } catch (error: any) {
@@ -91,7 +92,7 @@ export const CreateForm = ({ regions }: { regions: Region[] }) => {
             setIsCommunesLoading(false);
         }
     };
- 
+
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -331,7 +332,7 @@ export const CreateForm = ({ regions }: { regions: Region[] }) => {
                             }}
                         />
                         <Button
-                            disabled={isRelationLoading || !validateRut(relationPersonRut)}
+                            disabled={isRelationLoading || !validate(relationPersonRut)}
                             type='button'
                             onClick={onSearchByRut}
                         >
@@ -346,7 +347,9 @@ export const CreateForm = ({ regions }: { regions: Region[] }) => {
                         </Button>
                     </div>
                     {relationPerson === undefined && (
-                        <div className='text-destructive text-sm mt-2 px-2 font-semibold'>No se ha encontrado al usuario.</div>
+                        <div className='text-destructive text-sm mt-2 px-2 font-semibold'>
+                            No se ha encontrado al usuario.
+                        </div>
                     )}
                     {relationPerson?.id && (
                         <div className='grid grid-cols-2 gap-3 mt-5'>

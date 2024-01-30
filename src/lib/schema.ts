@@ -1,5 +1,5 @@
 import * as z from 'zod';
-import { validateRut } from './utils';
+import { validate } from 'rut.js';
 
 const CURRENT_YEAR = new Date().getFullYear();
 export const createFormSchema = z.object({
@@ -16,7 +16,7 @@ export const createFormSchema = z.object({
         .max(15, {
             message: 'Por favor ingrese un rut válido.',
         })
-        .refine(value => validateRut(value), {
+        .refine(value => validate(value), {
             message: 'Por favor ingrese un rut válido',
         }),
     sex: z.string().min(1, {
