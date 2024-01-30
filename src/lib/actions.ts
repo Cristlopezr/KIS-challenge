@@ -19,13 +19,15 @@ export async function createPerson(data: z.infer<typeof createFormSchema>, relat
     const { name, lastname, commune, number_street, dob_day, dob_month, dob_year, email, phone, rut, sex } =
         validatedFields.data;
 
-    const phoneArray = phone.split(' ');
-
+    const phoneArray = phone.split('');
+console.log(phoneArray, "Phone array")
     if (phoneArray[0] !== '+') {
+        console.log("DENTRO DE LA WEA")
         phoneArray.unshift('+');
     }
 
     const formattedPhone = phoneArray.join('');
+    console.log(formattedPhone,"FormattedPhone")
     const formattedRut = format(rut);
     const dob = `${dob_year}-${dob_month}-${dob_day}`;
     const [number, ...rest] = number_street.split(' ');
@@ -72,7 +74,7 @@ export async function editPerson(id: string, data: z.infer<typeof createFormSche
     }
     const { name, lastname, commune, number_street, dob_day, dob_month, dob_year, email, phone, rut, sex } =
         validatedFields.data;
-    const phoneArray = phone.split(' ');
+    const phoneArray = phone.split('');
 
     if (phoneArray[0] !== '+') {
         phoneArray.unshift('+');
