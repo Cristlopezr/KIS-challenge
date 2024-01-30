@@ -49,7 +49,7 @@ export const CreateForm = ({ regions }: { regions: Region[] }) => {
         setErrorMessage(undefined);
         setIsLoading(true);
         try {
-            await createPerson(values, relationPersonRut);
+            await createPerson(values, relationPerson?.id);
             onShowAlert('success', 'Persona creada correctamente.', 'Éxito');
         } catch (error: any) {
             setIsLoading(false);

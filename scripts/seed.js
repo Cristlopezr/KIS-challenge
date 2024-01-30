@@ -19,8 +19,7 @@ async function createPersons(client) {
         street VARCHAR(100) NOT NULL,
         dob DATE NOT NULL,
         email TEXT NOT NULL UNIQUE,
-        commune_id UUID REFERENCES comuna(id) ON DELETE CASCADE,
-        relation_id UUID REFERENCES persona(id) ON DELETE SET NULL
+        commune_id UUID REFERENCES comuna(id) ON DELETE CASCADE
       );
     `;
 
@@ -105,11 +104,30 @@ async function seedCommunes(client) {
     }
 }
 
+async function createTableRelation(client) {
+    await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+    try {
+        const createTable = await client.sql`
+        CREATE TABLE relacion (
+        id_person_1 UUID REFERENCES persona(id),
+        id_person_2 UUID REFERENCES persona(id),
+        PRIMARY KEY (id_person_1, id_person_2)
+        );
+        `;
+
+        console.log('Table relacion created');
+    } catch {
+        console.error('Error creating table relacion:', error);
+        throw error;
+    }
+}
+
 async function main() {
     const client = await db.connect();
     /* await seedRegions(client); */
     /* await seedCommunes(client); */
-    await createPersons(client);
+    /* await createPersons(client); */
+    await createTableRelation(client)
     await client.end();
 }
 

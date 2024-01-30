@@ -1,12 +1,12 @@
 'use server';
 import z from 'zod';
 import { createFormSchema } from './schema';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, unstable_noStore } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { sql } from '@vercel/postgres';
 import { Commune } from './interfaces';
 
-export async function createPerson(data: z.infer<typeof createFormSchema>, relationRut?: string) {
+export async function createPerson(data: z.infer<typeof createFormSchema>, relationId: string) {
     const validatedFields = createFormSchema.safeParse(data);
 
     if (!validatedFields.success) {
@@ -22,20 +22,18 @@ export async function createPerson(data: z.infer<typeof createFormSchema>, relat
     const [number, ...rest] = number_street.split(' ');
 
     const street = rest.join('');
-    console.log(relationRut);
     try {
-        if (relationRut) {
-            console.log(relationRut, 'dentro');
-            const relationPerson = await sql`SELECT id FROM persona WHERE rut = ${relationRut}`;
-            await sql`
-    INSERT INTO persona (name, lastname, rut, sex, phone, number, street, dob, email, commune_id, relation_id)
-    Values (${name}, ${lastname}, ${rut}, ${sex}, ${phone}, ${number}, ${street}, ${dob}, ${email}, ${commune}, ${relationPerson.rows[0].id})
-    `;
-        } else {
-            await sql`
+        const id_person_2 = await sql`
     INSERT INTO persona (name, lastname, rut, sex, phone, number, street, dob, email, commune_id)
     Values (${name}, ${lastname}, ${rut}, ${sex}, ${phone}, ${number}, ${street}, ${dob}, ${email}, ${commune})
+    RETURNING id
     `;
+        if (relationId) {
+            const person_1 = await sql`SELECT id FROM persona WHERE id = ${relationId}`;
+            await sql`
+    INSERT INTO relacion (id_person_1, id_person_2)
+    Values (${person_1.rows[0].id}, ${id_person_2.rows[0].id})
+`;
         }
     } catch (error: any) {
         if (error?.code === '23505') {
@@ -46,7 +44,7 @@ export async function createPerson(data: z.infer<typeof createFormSchema>, relat
                 throw new Error('El correo electrónico ya está en uso.');
             }
         }
-
+        console.log(error);
         throw new Error('Ha ocurrido un error, no se ha podido registrar la persona.');
     }
 
@@ -116,6 +114,7 @@ export async function deletePerson(id: string) {
 }
 
 export async function fetchPersonByRut(rut: string) {
+    unstable_noStore();
     try {
         const person = await sql`SELECT * FROM persona WHERE rut = ${rut}`;
         return person.rows[0];

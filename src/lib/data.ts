@@ -109,6 +109,30 @@ export async function fetchRegions() {
     }
 }
 
+export async function fetchRelationsById(id: string, currentPage: number) {
+    unstable_noStore();
+    const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+    try {
+        const persons = await sql`
+        SELECT persona.*, 
+        comuna.name AS comuna, region.name AS region
+        FROM persona JOIN relacion ON persona.id = relacion.id_person_2 OR persona.id = relacion.id_person_1
+        JOIN comuna ON persona.commune_id = comuna.id
+        JOIN region ON comuna.region_id = region.id
+        WHERE relacion.id_person_1 = ${id} OR relacion.id_person_2 = ${id}
+        ORDER BY persona.name DESC
+        LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
+      `;
+        const newPersons = persons.rows.filter(person => person.id !== id);
+
+        return newPersons;
+    } catch (error) {
+        console.error('Error en la base de datos:', error);
+        throw new Error('Ocurrio un error al obtener la relacion persona.');
+    }
+}
+
 export const createFormItems: FormItems[] = [
     {
         id: 'name',

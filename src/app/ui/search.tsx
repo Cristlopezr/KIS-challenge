@@ -23,7 +23,7 @@ export const Search = () => {
     }, 300);
 
     return (
-        <div className='relative'>
+        <div className='relative mb-10'>
             <Input
                 className='px-14 py-6'
                 placeholder='Buscar'

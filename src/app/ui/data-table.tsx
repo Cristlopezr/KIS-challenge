@@ -40,7 +40,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 
     return (
         <div>
-            <div className='rounded-md border mt-10'>
+            <div className='rounded-md border'>
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map(headerGroup => (
