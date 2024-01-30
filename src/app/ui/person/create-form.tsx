@@ -4,14 +4,16 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { createPerson, fetchCommunes } from '@/lib/actions';
+import { createPerson, fetchCommunes, fetchPersonByRut } from '@/lib/actions';
 import { months } from '@/lib/data';
 import { Commune, Region } from '@/lib/interfaces';
 import { createFormSchema } from '@/lib/schema';
+import { formatDateToLocal, validateRut } from '@/lib/utils';
 import { useUiStore } from '@/store/ui-store';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { QueryResultRow } from '@vercel/postgres';
 import { Loader2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
@@ -21,6 +23,9 @@ export const CreateForm = ({ regions }: { regions: Region[] }) => {
     const [communes, setCommunes] = useState<Commune[]>([]);
     const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
     const onShowAlert = useUiStore(state => state.onShowAlert);
+    const [relationPersonRut, setRelationPersonRut] = useState('');
+    const [relationPerson, setRelationPerson] = useState<QueryResultRow | null | undefined>(null);
+    const [isRelationLoading, setIsRelationLoading] = useState(false);
 
     const form = useForm<z.infer<typeof createFormSchema>>({
         resolver: zodResolver(createFormSchema),
@@ -44,7 +49,7 @@ export const CreateForm = ({ regions }: { regions: Region[] }) => {
         setErrorMessage(undefined);
         setIsLoading(true);
         try {
-            await createPerson(values);
+            await createPerson(values, relationPersonRut);
             onShowAlert('success', 'Persona creada correctamente.', 'Éxito');
         } catch (error: any) {
             setIsLoading(false);
@@ -55,6 +60,23 @@ export const CreateForm = ({ regions }: { regions: Region[] }) => {
 
     const onChangePhone = (e: React.ChangeEvent<HTMLInputElement>) => {
         /* form.replace([{data: 'test'}]) */
+    };
+
+    const onCleanRelationPerson = () => {
+        setRelationPerson(null);
+        setRelationPersonRut('');
+    };
+
+    const onSearchByRut = async () => {
+        setIsRelationLoading(true);
+        try {
+            const relationRutPerson = await fetchPersonByRut(relationPersonRut);
+            setRelationPerson(relationRutPerson);
+            setIsRelationLoading(false);
+        } catch (error: any) {
+            console.log(error);
+            setIsRelationLoading(false);
+        }
     };
 
     const onChangeRegion = async (value: string) => {
@@ -69,7 +91,7 @@ export const CreateForm = ({ regions }: { regions: Region[] }) => {
             setIsCommunesLoading(false);
         }
     };
-
+ 
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -112,15 +134,15 @@ export const CreateForm = ({ regions }: { regions: Region[] }) => {
                                 <FormItem>
                                     <FormLabel>Rut</FormLabel>
                                     <FormControl>
-                                        <Input placeholder='Rut' {...field} />
+                                        <Input placeholder='11.111.111-1' {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             );
                         }}
                     />
-                    <div className='grid grid-cols-3 gap-3 items-start'>
-                        <FormLabel className='col-span-3 text-sm'>Fecha de nacimiento</FormLabel>
+                    <div className='grid grid-cols-1 min-[437px]:grid-cols-3 gap-3 items-start'>
+                        <FormLabel className='min-[437px]:col-span-3 text-sm'>Fecha de nacimiento</FormLabel>
                         <FormField
                             control={form.control}
                             name='dob_day'
@@ -202,15 +224,15 @@ export const CreateForm = ({ regions }: { regions: Region[] }) => {
                                 <FormItem>
                                     <FormLabel>Teléfono</FormLabel>
                                     <FormControl>
-                                        <Input placeholder='Teléfono' {...field} />
+                                        <Input placeholder='+56111111111' {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             );
                         }}
                     />
-                    <div className='grid grid-cols-3 items-center gap-3 col-span-2'>
-                        <FormLabel className='col-span-3'>Dirección</FormLabel>
+                    <div className='grid grid-cols-1 min-[437px]:grid-cols-3 items-center gap-3 col-span-2'>
+                        <FormLabel className='min-[437px]:col-span-3'>Dirección</FormLabel>
                         <FormField
                             control={form.control}
                             name='number_street'
@@ -298,6 +320,65 @@ export const CreateForm = ({ regions }: { regions: Region[] }) => {
                             );
                         }}
                     />
+                </div>
+                <div className='mt-8'>
+                    <div className='flex gap-3'>
+                        <Input
+                            placeholder='Buscar por rut - 11.111.111-1'
+                            value={relationPersonRut}
+                            onChange={e => {
+                                setRelationPersonRut(e.target.value);
+                            }}
+                        />
+                        <Button
+                            disabled={isRelationLoading || !validateRut(relationPersonRut)}
+                            type='button'
+                            onClick={onSearchByRut}
+                        >
+                            {isRelationLoading ? (
+                                <>
+                                    Procesando...
+                                    <Loader2 className='animate-spin' />
+                                </>
+                            ) : (
+                                'Buscar'
+                            )}
+                        </Button>
+                    </div>
+                    {relationPerson === undefined && (
+                        <div className='text-destructive text-sm mt-2 px-2 font-semibold'>No se ha encontrado al usuario.</div>
+                    )}
+                    {relationPerson?.id && (
+                        <div className='grid grid-cols-2 gap-3 mt-5'>
+                            <div className='flex items-center gap-3'>
+                                <FormLabel className='text-sm'>Nombre:</FormLabel>
+                                <Input
+                                    readOnly
+                                    disabled
+                                    value={`${relationPerson?.name} ${relationPerson?.lastname}`}
+                                />
+                            </div>
+                            <div className='flex items-center gap-3'>
+                                <FormLabel className='text-sm'>Rut:</FormLabel>
+                                <Input readOnly disabled value={relationPerson?.rut} />
+                            </div>
+                            <div className='flex items-center gap-3'>
+                                <FormLabel className='text-sm'>Teléfono:</FormLabel>
+                                <Input readOnly disabled value={relationPerson?.phone} />
+                            </div>
+                            <div className='flex items-center gap-3'>
+                                <FormLabel className='text-sm'>Fecha de nacimiento:</FormLabel>
+                                <Input readOnly disabled value={formatDateToLocal(relationPerson?.dob)} />
+                            </div>
+                            <Button
+                                variant='outline'
+                                className='mt-3 mx-auto col-span-2 w-[300px]'
+                                onClick={onCleanRelationPerson}
+                            >
+                                Limpiar
+                            </Button>
+                        </div>
+                    )}
                 </div>
                 {errorMessage && (
                     <div className='text-sm mx-auto w-1/2 text-center col-span-2 text-destructive mt-7 -mb-5'>

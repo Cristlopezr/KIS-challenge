@@ -5,7 +5,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { QueryResultRow } from '@vercel/postgres';
 import { DeletePerson } from './person/deletePerson';
 import Link from 'next/link';
-import { FilePenLine, MoreHorizontal } from 'lucide-react';
+import { ArrowUpDown, FilePenLine, MoreHorizontal } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -19,7 +19,14 @@ import { Button } from '@/components/ui/button';
 export const columns: ColumnDef<QueryResultRow, unknown>[] = [
     {
         accessorKey: 'name',
-        header: 'Nombre',
+        header: ({ column }) => {
+            return (
+                <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+                    Nombre
+                    <ArrowUpDown className='ml-2 h-4 w-4' />
+                </Button>
+            );
+        },
         accessorFn: ({ name, lastname }) => `${name} ${lastname}`,
     },
     {
@@ -72,15 +79,6 @@ export const columns: ColumnDef<QueryResultRow, unknown>[] = [
                     </DropdownMenuContent>
                 </DropdownMenu>
             );
-
-            /*  return (
-                <div className='flex justify-end items-start gap-3'>
-                    <Link href={`/person/${row.original.id}/edit`} className='pb-1'>
-                        <FilePenLine className='text-primary' />
-                    </Link>
-                    <DeletePerson id={row.original.id} />
-                </div>
-            ); */
         },
     },
 ];

@@ -16,7 +16,7 @@ export default async function Home({ searchParams }: { searchParams?: { page: st
     const totalPages = await fetchPersonsPages(query);
 
     return (
-        <main className='xl:container mt-20'>
+        <main className='xl:container mt-20 px-2 lg:px-10'>
             <Link href='/person/create'>
                 <Button className='block ml-auto mr-2 mb-5'>Crear</Button>
             </Link>

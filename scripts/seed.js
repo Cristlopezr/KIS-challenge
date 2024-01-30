@@ -19,7 +19,8 @@ async function createPersons(client) {
         street VARCHAR(100) NOT NULL,
         dob DATE NOT NULL,
         email TEXT NOT NULL UNIQUE,
-        commune_id UUID REFERENCES comuna(id) ON DELETE CASCADE
+        commune_id UUID REFERENCES comuna(id) ON DELETE CASCADE,
+        relation_id UUID REFERENCES persona(id) ON DELETE SET NULL
       );
     `;
 

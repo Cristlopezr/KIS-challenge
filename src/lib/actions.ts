@@ -6,7 +6,7 @@ import { redirect } from 'next/navigation';
 import { sql } from '@vercel/postgres';
 import { Commune } from './interfaces';
 
-export async function createPerson(data: z.infer<typeof createFormSchema>) {
+export async function createPerson(data: z.infer<typeof createFormSchema>, relationRut?: string) {
     const validatedFields = createFormSchema.safeParse(data);
 
     if (!validatedFields.success) {
@@ -22,12 +22,21 @@ export async function createPerson(data: z.infer<typeof createFormSchema>) {
     const [number, ...rest] = number_street.split(' ');
 
     const street = rest.join('');
-
+    console.log(relationRut);
     try {
-        await sql`
+        if (relationRut) {
+            console.log(relationRut, 'dentro');
+            const relationPerson = await sql`SELECT id FROM persona WHERE rut = ${relationRut}`;
+            await sql`
+    INSERT INTO persona (name, lastname, rut, sex, phone, number, street, dob, email, commune_id, relation_id)
+    Values (${name}, ${lastname}, ${rut}, ${sex}, ${phone}, ${number}, ${street}, ${dob}, ${email}, ${commune}, ${relationPerson.rows[0].id})
+    `;
+        } else {
+            await sql`
     INSERT INTO persona (name, lastname, rut, sex, phone, number, street, dob, email, commune_id)
     Values (${name}, ${lastname}, ${rut}, ${sex}, ${phone}, ${number}, ${street}, ${dob}, ${email}, ${commune})
     `;
+        }
     } catch (error: any) {
         if (error?.code === '23505') {
             if (error.message.includes('rut')) {
@@ -58,7 +67,7 @@ export async function editPerson(id: string, data: z.infer<typeof createFormSche
         validatedFields.data;
 
     const dob = `${dob_year}-${dob_month}-${dob_day}`;
-  
+
     const [number, ...rest] = number_street.split(' ');
 
     const street = rest.join('');
@@ -103,5 +112,15 @@ export async function deletePerson(id: string) {
     } catch (error) {
         console.error('Error en la base de datos:', error);
         throw new Error('Ocurrio un error al eliminar el usuario.');
+    }
+}
+
+export async function fetchPersonByRut(rut: string) {
+    try {
+        const person = await sql`SELECT * FROM persona WHERE rut = ${rut}`;
+        return person.rows[0];
+    } catch (error) {
+        console.error('Error en la base de datos:', error);
+        throw new Error('Ocurrio un error al obtener la persona.');
     }
 }

@@ -16,7 +16,7 @@ export async function fetchPersons() {
     }
 }
 
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 6;
 export async function fetchFilteredPersons(query: string, currentPage: number) {
     unstable_noStore();
     const offset = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -43,7 +43,7 @@ export async function fetchFilteredPersons(query: string, currentPage: number) {
             to_char(dob, 'DD Mon YYYY') ILIKE ${`%${query}%`} OR
             to_char(dob, 'DD/MM/YYYY') ILIKE ${`%${query}%`} OR
             to_char(dob, 'DD-MM-YYYY') ILIKE ${`%${query}%`}
-        ORDER BY persona.name ASC
+        ORDER BY persona.name DESC
         LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
       `;
         return persons.rows;

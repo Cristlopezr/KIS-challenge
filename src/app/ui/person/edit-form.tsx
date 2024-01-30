@@ -129,8 +129,8 @@ export const EditForm = ({ person, regions }: { person: EditPerson; regions: Reg
                             );
                         }}
                     />
-                    <div className='grid grid-cols-3 gap-3 items-start'>
-                        <FormLabel className='col-span-3 text-sm'>Fecha de nacimiento</FormLabel>
+                    <div className='grid grid-cols-1 min-[437px]:grid-cols-3 gap-3 items-start'>
+                        <FormLabel className='min-[437px]:col-span-3 text-sm'>Fecha de nacimiento</FormLabel>
                         <FormField
                             control={form.control}
                             name='dob_day'
@@ -220,8 +220,8 @@ export const EditForm = ({ person, regions }: { person: EditPerson; regions: Reg
                             );
                         }}
                     />
-                    <div className='grid grid-cols-3 items-center gap-3 col-span-2'>
-                        <FormLabel className='col-span-3'>Dirección</FormLabel>
+                    <div className='grid grid-cols-1 min-[437px]:grid-cols-3 items-center gap-3 col-span-2'>
+                        <FormLabel className='min-[437px]:col-span-3'>Dirección</FormLabel>
                         <FormField
                             control={form.control}
                             name='number_street'
