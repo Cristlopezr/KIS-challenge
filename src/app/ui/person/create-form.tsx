@@ -225,7 +225,7 @@ export const CreateForm = ({ regions }: { regions: Region[] }) => {
                                 <FormItem>
                                     <FormLabel>Teléfono</FormLabel>
                                     <FormControl>
-                                        <Input placeholder='+56111111111' {...field} />
+                                        <Input placeholder='+56 1 11111111' {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

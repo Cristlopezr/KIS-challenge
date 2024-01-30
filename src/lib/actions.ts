@@ -19,6 +19,13 @@ export async function createPerson(data: z.infer<typeof createFormSchema>, relat
     const { name, lastname, commune, number_street, dob_day, dob_month, dob_year, email, phone, rut, sex } =
         validatedFields.data;
 
+    const phoneArray = phone.split(' ');
+
+    if (phoneArray[0] !== '+') {
+        phoneArray.unshift('+');
+    }
+
+    const formattedPhone = phoneArray.join('');
     const formattedRut = format(rut);
     const dob = `${dob_year}-${dob_month}-${dob_day}`;
     const [number, ...rest] = number_street.split(' ');
@@ -27,7 +34,7 @@ export async function createPerson(data: z.infer<typeof createFormSchema>, relat
     try {
         const id_person_2 = await sql`
     INSERT INTO persona (name, lastname, rut, sex, phone, number, street, dob, email, commune_id)
-    Values (${name}, ${lastname}, ${formattedRut}, ${sex}, ${phone}, ${number}, ${street}, ${dob}, ${email}, ${commune})
+    Values (${name}, ${lastname}, ${formattedRut}, ${sex}, ${formattedPhone}, ${number}, ${street}, ${dob}, ${email}, ${commune})
     RETURNING id
     `;
         if (relationId) {
@@ -65,7 +72,13 @@ export async function editPerson(id: string, data: z.infer<typeof createFormSche
     }
     const { name, lastname, commune, number_street, dob_day, dob_month, dob_year, email, phone, rut, sex } =
         validatedFields.data;
+    const phoneArray = phone.split(' ');
 
+    if (phoneArray[0] !== '+') {
+        phoneArray.unshift('+');
+    }
+
+    const formattedPhone = phoneArray.join('');
     const formattedRut = format(rut);
     const dob = `${dob_year}-${dob_month}-${dob_day}`;
 
@@ -75,7 +88,7 @@ export async function editPerson(id: string, data: z.infer<typeof createFormSche
 
     try {
         await sql`
-    UPDATE persona SET id = ${id}, name = ${name}, lastname = ${lastname}, rut = ${formattedRut}, sex = ${sex}, phone = ${phone}, number = ${number}, street = ${street}, dob = ${dob}, email = ${email}, commune_id = ${commune}
+    UPDATE persona SET id = ${id}, name = ${name}, lastname = ${lastname}, rut = ${formattedRut}, sex = ${sex}, phone = ${formattedPhone}, number = ${number}, street = ${street}, dob = ${dob}, email = ${email}, commune_id = ${commune}
     WHERE id = ${id}
     `;
     } catch (error: any) {

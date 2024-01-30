@@ -122,7 +122,7 @@ export const EditForm = ({ person, regions }: { person: EditPerson; regions: Reg
                                 <FormItem>
                                     <FormLabel>Rut</FormLabel>
                                     <FormControl>
-                                        <Input placeholder='Rut' {...field} />
+                                        <Input placeholder='11.111.111-1' {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -213,7 +213,7 @@ export const EditForm = ({ person, regions }: { person: EditPerson; regions: Reg
                                 <FormItem>
                                     <FormLabel>Teléfono</FormLabel>
                                     <FormControl>
-                                        <Input placeholder='Teléfono' {...field} />
+                                        <Input placeholder='+56 1 11111111' {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

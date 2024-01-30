@@ -24,9 +24,8 @@ export const createFormSchema = z.object({
     }),
     phone: z
         .string()
-        .min(12, { message: 'Por favor ingrese un número de teléfono válido.' })
         .trim()
-        .refine(value => /^[+]?[0-9]+$/.test(value), {
+        .regex(/^(\+?56)?(\s?)(0?9)(\s?)[98765432]\d{7}$/, {
             message: 'Por favor ingrese un número de teléfono válido.',
         }),
     number_street: z.string().min(1, { message: 'Por favor ingrese número y calle.' }).trim(),
