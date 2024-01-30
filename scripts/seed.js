@@ -5,16 +5,14 @@ async function createPersons(client) {
     try {
         await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
 
-        await client.sql`DROP TABLE IF EXISTS persona;`;
-
         const createTable = await client.sql`
         CREATE TABLE IF NOT EXISTS persona (
         id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
         lastname VARCHAR(255) NOT NULL,
-        rut VARCHAR(12) NOT NULL UNIQUE,
+        rut VARCHAR(50) NOT NULL UNIQUE,
         sex VARCHAR(6) NOT NULL,
-        phone VARCHAR(12) NOT NULL,
+        phone VARCHAR(50) NOT NULL,
         number VARCHAR(30) NOT NULL,
         street VARCHAR(100) NOT NULL,
         dob DATE NOT NULL,
@@ -106,12 +104,15 @@ async function seedCommunes(client) {
 
 async function createTableRelation(client) {
     await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+
     try {
         const createTable = await client.sql`
         CREATE TABLE relacion (
         id_person_1 UUID REFERENCES persona(id),
         id_person_2 UUID REFERENCES persona(id),
-        PRIMARY KEY (id_person_1, id_person_2)
+        PRIMARY KEY (id_person_1, id_person_2),
+        FOREIGN KEY (id_person_1) REFERENCES persona(id) ON DELETE CASCADE,
+        FOREIGN KEY (id_person_2) REFERENCES persona(id) ON DELETE CASCADE
         );
         `;
 
@@ -122,12 +123,18 @@ async function createTableRelation(client) {
     }
 }
 
+async function dropTables(client) {
+    await client.sql`DROP TABLE IF EXISTS relacion;`;
+    await client.sql`DROP TABLE IF EXISTS persona;`;
+}
+
 async function main() {
     const client = await db.connect();
+    await dropTables(client);
     /* await seedRegions(client); */
     /* await seedCommunes(client); */
-    /* await createPersons(client); */
-    await createTableRelation(client)
+    await createPersons(client);
+    await createTableRelation(client);
     await client.end();
 }
 

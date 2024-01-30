@@ -121,6 +121,7 @@ export async function fetchCommunes(region_id: string) {
 
 export async function deletePerson(id: string) {
     try {
+        await sql`DELETE FROM relacion WHERE id_person_1 = ${id} OR id_person_2 = ${id};`
         await sql`DELETE FROM persona WHERE id = ${id}`;
         revalidatePath('/');
     } catch (error) {
