@@ -1,6 +1,7 @@
 import * as z from 'zod';
 import { validateRut } from './utils';
 
+const CURRENT_YEAR = new Date().getFullYear();
 export const createFormSchema = z.object({
     name: z
         .string()
@@ -46,7 +47,7 @@ export const createFormSchema = z.object({
         .trim()
         .min(1, { message: 'Por favor ingrese un día' })
         .max(2, { message: 'Por favor ingrese un día válido.' })
-        .regex(/^\d+$/, { message: 'Por favor ingrese un día válido' }),
+        .regex(/^(?:[1-9]|1\d|2[0-9]|3[0-1])$/, { message: 'Por favor ingrese un día válido' }),
     dob_month: z.string().min(1, {
         message: 'Por favor seleccione un mes.',
     }),
@@ -56,7 +57,10 @@ export const createFormSchema = z.object({
         .min(4, { message: 'Por favor ingrese un año válido' })
         .max(4, { message: 'Por favor ingrese un año válido' })
         .trim()
-        .regex(/^\d+$/, { message: 'Por favor ingrese un año válido' }),
+        .regex(/^\d+$/, { message: 'Por favor ingresar un año válido' })
+        .refine(value => Number(value) <= CURRENT_YEAR && Number(value) >= 1900, {
+            message: 'Por favor ingresar un año válido',
+        }),
     email: z
         .string()
         .min(1, {
